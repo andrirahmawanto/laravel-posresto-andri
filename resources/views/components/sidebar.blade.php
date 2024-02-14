@@ -21,7 +21,7 @@
             </li>
             <li class="{{ Request::is('product') ? 'active' : '' }}">
                 <a class="nav-link"
-                    href="{{route('users.index')}}"><i class="fas fa-fire">
+                    href="{{route('products.index')}}"><i class="fas fa-fire">
                     </i> <span>Product</span>
                 </a>
             </li>

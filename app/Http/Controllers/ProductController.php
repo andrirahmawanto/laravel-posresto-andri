@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,54 +13,62 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         //get all users with pagination
-        $users = DB::table('users')
-            ->when($request->input('name'), function ($query, $name) {
-                $query->where('name', 'like', '%' . $name . '%')
-                    ->orWhere('email', 'like', '%' . $name . '%');
-            })
-            ->paginate(10);
-        return view('pages.users.index', compact('users'));
+        $products = Product::paginate(10);
+        return view('pages.products.index', compact('products'));
     }
 
     // create
     public function create()
     {
-        return view('pages.users.create');
+        $categories = Category::paginate(10);
+        return view('pages.products.create', compact('categories'));
     }
 
     // store
     public function store(Request $request)
     {
-        // validate the request...
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-            'role' => 'required|in:admin,staff,user',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'category_id' => 'required',
+            'stock' => 'required|numeric',
+            'status' => 'required|boolean',
+            'is_favorite' => 'required|boolean',
+            // 'image' => 'required|image|mimes:png,jpg,jpeg'
         ]);
+        $product = new Product;
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = (int) $request->price;
+        $product->stock = (int) $request->stock;
+        $product->category_id = $request->category_id;
+        $product->status = $request->status;
+        $product->is_favorite = $request->is_favorite;
+        // $product->image = $filename;
+        $product->save();
+        if($request->hasFile('image')){
+            $image = $request->file('image');
+            $image->storeAs('public/products', $product->id . '.' . $image->getClientOriginalExtension());
+            $product->image = 'storage/products/'.$product->id . '.' . $image->getClientOriginalExtension();
+            $product->save();
+        }
 
-        // store the request...
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->role = $request->role;
-        $user->save();
-
-        return redirect()->route('users.index')->with('success', 'User created successfully');
+        return redirect()->route('products.index')->with('success', 'Product successfully created');
     }
 
     // show
     public function show($id)
     {
-        return view('pages.users.show');
+        return view('pages.products.show');
     }
 
     // edit
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        return view('pages.users.edit', compact('user'));
+        $product = Product::findOrFail($id);
+        $categories = DB::table('categories')->get();
+        return view('pages.products.edit', compact('product','categories'));
     }
 
     // update
@@ -67,33 +77,40 @@ class ProductController extends Controller
         // validate the request...
         $request->validate([
             'name' => 'required',
-            'email' => 'required',
-            'role' => 'required|in:admin,staff,user',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'category_id' => 'required',
+            'stock' => 'required|numeric',
+            'status' => 'required|boolean',
+            'is_favorite' => 'required|boolean',
         ]);
+        $product = Product::find($id);
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = (int) $request->price;
+        $product->stock = (int) $request->stock;
+        $product->category_id = $request->category_id;
+        $product->status = $request->status;
+        $product->is_favorite = $request->is_favorite;
+        $product->save();
 
-        // update the request...
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->role = $request->role;
-        $user->save();
-
-        //if password is not empty
-        if ($request->password) {
-            $user->password = Hash::make($request->password);
-            $user->save();
+        if($request->hasFile('image')){
+            $image = $request->file('image');
+            $image->storeAs('public/products', $product->id . '.' . $image->getClientOriginalExtension());
+            $product->image = 'storage/products/'.$product->id . '.' . $image->getClientOriginalExtension();
+            $product->save();
         }
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully');
+        return redirect()->route('products.index')->with('success', 'User updated successfully');
     }
 
     // destroy
     public function destroy($id)
     {
         // delete the request...
-        $user = User::find($id);
-        $user->delete();
+        $product = Product::find($id);
+        $product->delete();
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully');
+        return redirect()->route('products.index')->with('success', 'User deleted successfully');
     }
 }
