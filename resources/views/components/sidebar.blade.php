@@ -15,7 +15,7 @@
             </li>
             <li class="{{ Request::is('category') ? 'active' : '' }}">
                 <a class="nav-link"
-                    href="{{route('users.index')}}"><i class="fas fa-list">
+                    href="{{route('categories.index')}}"><i class="fas fa-list">
                     </i> <span>Category</span>
                 </a>
             </li>
