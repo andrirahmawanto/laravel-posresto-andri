@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
         name="viewport">
-    <title>@yield('title') &mdash; Stisla</title>
+    <title>@yield('title') &mdash; Resto Kita</title>
 
     <!-- General CSS Files -->
     <link rel="stylesheet"
@@ -15,7 +15,6 @@
         integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer" />
-
     @stack('style')
 
     <!-- Template CSS -->
